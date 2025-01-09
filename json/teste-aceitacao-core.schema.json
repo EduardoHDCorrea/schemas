@@ -1,7 +1,8 @@
 {
-  "$id": "teste-aceitacao-core.schema.json",
-  "$schema": "http://json-schema.org/draft-07/schema",
-  "title": "Schema para teste de aceitação do core.",
+  "name": "teste-aceitacao.json",
+  "description": "Schema para teste de aceitação do core.",
+  "fileMatch": [ "**/SuiteDeTeste/**/*.json" ],
+  "url": "https://eduardohdcorrea.github.io/schemas/json/teste-aceitacao-core.schema.json",
   "type": "object",
   "properties": {
     "Nome": {
