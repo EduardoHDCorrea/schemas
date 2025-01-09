@@ -24,6 +24,7 @@
                 "description": "Rota da requisição. Exemplo: {{RotaBase}}/Autenticar"
               },
               "Metodo": {
+                "description": "Método HTTP da requisição.",
                 "type": "string",
                 "enum": [
                   "Get",
@@ -34,9 +35,17 @@
                 ]
               },
               "Body": {
-                "type": ["object", "array", "string", "number", "integer", "boolean"]
+                "description": "Corpo da requisição.",
+                "type": ["object", "array", "string", "number", "integer", "boolean"],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Id da entidade."
+                  }
+                }
               },
               "Headers": {
+                "description": "Headers da requisição.",
                 "type": "object",
                 "properties": {
                   "Authorization": {
@@ -49,7 +58,8 @@
             "required": [
               "Rota",
               "Metodo",
-              "Body"
+              "Body",
+              "Headers"
             ]
           },
           "Retorno": {
@@ -88,6 +98,23 @@
                     "Body"
                   ]
                 }
+              },
+              "else": {
+                "if": {
+                    "properties": {
+                        "Codigo": { "enum": [400] }
+                    }
+                },
+                "then": {
+                  "properties": {
+                    "Body": {
+                      "$ref": "#/definitions/ErrosDeValidação"
+                    }
+                  },
+                  "required": [
+                    "Body"
+                  ]
+                }
               }
             },
             "required": [
@@ -105,5 +132,64 @@
   "required": [
     "Nome",
     "Comandos"
-  ]
+  ],
+
+  "definitions": {
+    "ErrosDeValidação": {
+      "title": "Erros de Validação",
+      "type": "object",
+      "propertyNames": true,
+      "properties": {
+        "titulo": {
+          "type": "string",
+          "description": "Título do erro.",
+          "examples": ["Ocorreu um erro de validação!", "Dados incorretos!"]
+        },
+        "descricao": {
+          "type": "string",
+          "description": "Descrição do erro."
+        },
+        "objetosInformacao": {
+          "description": "Detalhes dos erros por comando.",
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            ".*": {
+              "description": "Comando que gerou o erro.",
+              "type": "object",
+              "minProperties": 1,
+              "minItems": 1,
+              "patternProperties": {
+                ".*": {
+                  "type": "array",
+                  "description": "Campo do comando que gerou o erro.",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "descricao": {
+                        "type": "string",
+                        "description": "Motivo do erro."
+                      },
+                      "codigo": {
+                        "type": "string",
+                        "description": "Código do erro."
+                      }
+                    },
+                    "required": [
+                      "descricao"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "descricao",
+        "objetosInformacao"
+      ]
+    }
+  }
 }
