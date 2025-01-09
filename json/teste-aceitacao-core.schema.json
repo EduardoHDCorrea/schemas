@@ -1,0 +1,108 @@
+{
+  "$id": "teste-aceitacao-core.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Schema para teste de aceitação do core.",
+  "type": "object",
+  "properties": {
+    "Nome": {
+      "type": "string",
+      "description": "Nome do teste de aceitação, utilizado para identificação do mesmo."
+    },
+    "Comandos": {
+      "description": "Lista de comandos a serem enviados no teste.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Requisicao": {
+            "description": "Dados da requisição, como corpo do comando, rota, método e headers.",
+            "type": "object",
+            "properties": {
+              "Rota": {
+                "type": "string",
+                "description": "Rota da requisição. Exemplo: {{RotaBase}}/Autenticar"
+              },
+              "Metodo": {
+                "type": "string",
+                "enum": [
+                  "Get",
+                  "Post",
+                  "Put",
+                  "Delete",
+                  "Patch"
+                ]
+              },
+              "Body": {
+                "type": ["object", "array", "string", "number", "integer", "boolean"]
+              },
+              "Headers": {
+                "type": "object",
+                "properties": {
+                  "Authorization": {
+                    "type": "string",
+                    "description": "Exemplo: Bearer {{AccessTokenAutenticar/1}}"
+                  }
+                }
+              }
+            },
+            "required": [
+              "Rota",
+              "Metodo",
+              "Body"
+            ]
+          },
+          "Retorno": {
+            "description": "O retorno esperado da requisição.",
+            "type": "object",
+            "properties": {
+              "Codigo": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Código de retorno esperado. Exemplo: 200"
+              },
+              "Body": {
+                "description": "Corpo da resposta esperada, quando houver.",
+                "type": ["object", "array", "string", "number", "integer", "boolean"]
+              }
+            },
+            "if": {
+              "properties": {
+                "Codigo": { "enum": [200, 400] }
+              }
+            },
+            "then": {
+              "required": [
+                "Body"
+              ]
+            },
+            "else": {
+              "if": {
+                "properties": {
+                  "Codigo": { "enum": [204] }
+                }
+              },
+              "then": {
+                "not": {
+                  "required": [
+                    "Body"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "Codigo"
+            ]
+          }
+        },
+        "required": [
+          "Requisicao",
+          "Retorno"
+        ]
+      }
+    }
+  },
+  "required": [
+    "Nome",
+    "Comandos"
+  ]
+}
