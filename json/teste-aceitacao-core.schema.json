@@ -58,9 +58,20 @@
             "required": [
               "Rota",
               "Metodo",
-              "Body",
               "Headers"
-            ]
+            ],
+            "if": {
+              "properties": {
+                "Metodo": {
+                  "not": {
+                    "enum": ["Get"]
+                  }
+                }
+              }
+            },
+            "then": {
+              "required": ["Body"]
+            }
           },
           "Retorno": {
             "description": "O retorno esperado da requisição.",
